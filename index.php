@@ -7,7 +7,7 @@
     use \Michelf\MarkdownExtra;
 
     // Define keys and defaults
-    // $secret = 'ChangeThisString';
+    include('config.php');
     $v_keys = array('title', 'subtitle', 'body_md', 'c_bg', 'c_h', 'c_title');
     $v = array();
     $v['title'] = "Default Title";
@@ -79,26 +79,45 @@
         font-family: 'Source Sans Pro', Helvetica, sans-serif;
       }
       #body {
-        padding: 50px;
         font-size: 1.5em;
-        line-height: 1.15em;
+        line-height: 1.3em;
+      }
+      #body .round {
+        height: 200px;
+        width: 200px;
+        border-radius: 100px;
+        overflow: hidden;
+        border: 4px solid #fff;
+        box-shadow: 0px 0px 5px #000;
+        margin: -150px auto -50px auto;
+      }
+      #body .round img {
+        width: 200px;
       }
 
       h1, h2, h3, h4, h5, h6 {
         font-family: 'Roboto', sans-serif;        
         color: <?= $v['c_h'] ?>;
         font-weight: 400;
+        line-height: 1.1em;
+        margin: 1em 0em 0em 0em;
       }
       
       blockquote {
         border-left: 5px solid <?= $v['c_h'] ?>;
-        margin-left: 0; padding: 0.1em 1em;
+        margin-left: 0;
+        padding: 0.1em 1em;
       }
       
       #header {
-          background-color: <?= $v['c_bg'] ?>;
-          padding: 50px;
-          text-align: left;
+          background-image: url("<?= $v['c_bg'] ?>");
+          background-position: center center;
+          background-size: 100% auto;
+          text-align: center;
+          text-shadow: 1px 1px 25px black;
+          border-bottom: 4px solid black;
+          background-repeat: no-repeat;
+          background-color: black;
         }
         #header h1, 
         #header h2 {
@@ -112,6 +131,9 @@
         #header h1 {
           margin-left: -0.1em;
           font-size: 10em;
+        }
+        #header h2 {
+          font-size: 4em;
       }
       
       #editor {
@@ -124,7 +146,6 @@
         #editor a:active,
         #editor a:visited {
           color: #ecf0f1;
-  
         }
         #editor h1 {
           color: white;
@@ -140,6 +161,45 @@
         .pure-g [class *="pure-u"] {
           font-family: 'Source Sans Pro', Helvetica, sans-serif;
       }
+      
+      
+      @media (max-width: 599px) {
+          #header, #body {
+            padding: 20px;
+            padding-bottom: 130px;
+          }
+          #header h1 {
+            font-size: 3em;
+          }
+          #header h2 {
+            font-size: 2em;
+          }
+        }
+        @media (min-width: 600px) and (max-width: 919px) {
+          #header, #body {
+            padding: 35px;
+            padding-bottom: 150px;
+          }
+          #header h1 {
+            font-size: 5em;
+          }
+          #header h2 {
+            font-size: 3em;
+          }          
+        }
+        @media (min-width: 920px) {
+          #header, #body {
+            padding: 50px;
+            padding-bottom: 150px;
+          }
+          #header h1 {
+            font-size: 10em;
+          }
+          #header h2 {
+            font-size: 4em;
+          }          
+        }
+      
     </style>
 </head>
 
