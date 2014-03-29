@@ -7,13 +7,13 @@
     use \Michelf\MarkdownExtra;
 
     // Define keys and defaults
-    // $secret = 'SomeLongString'
+    // $secret = 'ChangeThisString';
     $v_keys = array('title', 'subtitle', 'body_md', 'c_bg', 'c_h', 'c_title');
     $v = array();
     $v['title'] = "Default Title";
     $v['subtitle'] = "Default Subtitle";
     $v['body_md'] = "Markdown Body";
-    $v['c_bg'] = "#9b59b6";
+    $v['c_bg'] = "#34495e";
     $v['c_h'] = "#8e44ad";
     $v['c_title'] = "white";
     
@@ -22,34 +22,45 @@
       $editmode = True;
     }
     
-    if ($db = new SQLiteDatabase('radhe.db')) {
-        $q = @$db->query('SELECT * FROM variables');
-        
-        // Initialize table if necesary
-        if ($q === false) {
-            $db->queryExec('CREATE TABLE variables (key text, value text, PRIMARY KEY (key));');
-            $q = @$db->query('SELECT * FROM variables');
-        }
-        
-        // Save new values if posted
-        if ($_POST != NULL) {
-          foreach ($v_keys as $v_key) {
-            if (isset($_POST[$v_key])) {
-              $value = $_POST[$v_key];
-              $db->queryExec("INSERT OR REPLACE INTO variables (key, value) VALUES ('$v_key', '$value');");            
-            }
+    // Set default timezone
+    date_default_timezone_set('UTC');
+ 
+    try {
+      // Create (connect to) SQLite database in file
+      $file_db = new PDO('sqlite:data.sqlite3');
+
+      // Set errormode to exceptions
+      $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+      // Create variables table
+      $file_db->exec("CREATE TABLE IF NOT EXISTS variables (key text, value text, PRIMARY KEY (key));");
+
+      // Save new values if posted
+      if ($_POST != NULL) {
+        foreach ($v_keys as $v_key) {
+          if (isset($_POST[$v_key])) {
+            $value = $_POST[$v_key];
+            
+            // Update old title to new title
+            $update = "INSERT OR REPLACE INTO variables (key, value) VALUES ('$v_key', '$value');";
+            // Execute update
+            $file_db->exec($update);
           }
-          $q = @$db->query('SELECT * FROM variables');
         }
+      }
 
-        // Save all k/v pairs into $v array
-        while ($row = $q->fetch(SQLITE_ASSOC)) {
-          $v[$row['key']] = $row['value'];
-        }
-    } else {
-        die($err);
+      // Select all data from file db messages table 
+      $result = $file_db->query('SELECT * FROM variables');
+      
+      // Save all k/v pairs into $v array
+      foreach($result as $row) {
+        $v[$row['key']] = $row['value'];
+      }
+
+    } catch(PDOException $e) {
+      echo "<strong>PDOException:</strong> ";
+      echo $e->getMessage();
     }
-
 
 ?>
 <!DOCTYPE html>
@@ -133,7 +144,7 @@
 </head>
 
 <body>
-    <?php if $editmode { ?>
+    <?php if ($editmode) { ?>
       <form id="editor" action="" method="post" class="pure-form pure-form-stacked">
         <h1>Site Editor</h1>
         <div class="pure-g">
