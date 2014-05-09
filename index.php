@@ -39,12 +39,10 @@
       if ($_POST != NULL) {
         foreach ($v_keys as $v_key) {
           if (isset($_POST[$v_key])) {
-            $value = $_POST[$v_key];
-            
-            // Update old title to new title
-            $update = "INSERT OR REPLACE INTO variables (key, value) VALUES ('$v_key', '$value');";
-            // Execute update
-            $file_db->exec($update);
+            $value = $_POST[$v_key];            
+            $query = "INSERT OR REPLACE INTO variables (key, value) VALUES (:key, :value);";
+            $sth = $file_db->prepare($query);
+            $sth->execute(array(':key' => $v_key, ':value' => $value) );
           }
         }
       }
@@ -79,20 +77,38 @@
         font-family: 'Source Sans Pro', Helvetica, sans-serif;
       }
       #body {
-        font-size: 1.5em;
-        line-height: 1.3em;
+        font-size: 1.3em;
+        line-height: 1.25em;
       }
       #body .round {
-        height: 200px;
-        width: 200px;
-        border-radius: 100px;
+        height: 180px;
+        width: 180px;
+        border-radius: 90px;
         overflow: hidden;
         border: 4px solid #fff;
         box-shadow: 0px 0px 5px #000;
-        margin: -150px auto -50px auto;
+        margin: -100px 0px 20px 20px;
+        float: right;
       }
       #body .round img {
+        width: 180px;
+        border: none;
+        box-shadow: none;
+        margin: 0px;
+        padding: 0px;
+      }
+      
+      #body img {
         width: 200px;
+        height: auto;
+        border-radius: 5px;
+        overflow: hidden;
+        border: 4px solid #fff;
+        box-shadow: 0px 0px 5px #000;
+        margin: 20px;
+        margin-right: 0px;
+        float: right;
+        clear: right;
       }
 
       h1, h2, h3, h4, h5, h6 {
@@ -103,10 +119,24 @@
         margin: 1em 0em 0em 0em;
       }
       
+      #body > h1:first-of-type {
+        margin-top: 0em;
+      }
+      
       blockquote {
         border-left: 5px solid <?= $v['c_h'] ?>;
         margin-left: 0;
         padding: 0.1em 1em;
+      }
+      
+      a, a:link, a:visited,
+      a:hover, a:active {
+        color: <?= $v['c_h'] ?>;
+      }
+      
+      hr {
+        clear: both;
+        border-color: transparent;
       }
       
       #header {
@@ -114,7 +144,7 @@
           background-position: center center;
           background-size: 100% auto;
           text-align: center;
-          text-shadow: 1px 1px 25px black;
+          text-shadow: 0px 0px 25px black, 0px 0px 40px black, 0px 0px 10px rgba(0,0,0,0.3);
           border-bottom: 4px solid black;
           background-repeat: no-repeat;
           background-color: black;
@@ -166,37 +196,37 @@
       @media (max-width: 599px) {
           #header, #body {
             padding: 20px;
-            padding-bottom: 130px;
+            padding-bottom: 100px;
           }
           #header h1 {
-            font-size: 3em;
+            font-size: 2em;
           }
           #header h2 {
-            font-size: 2em;
+            font-size: 1em;
           }
         }
         @media (min-width: 600px) and (max-width: 919px) {
           #header, #body {
             padding: 35px;
-            padding-bottom: 150px;
+            padding-bottom: 50px;
           }
           #header h1 {
-            font-size: 5em;
+            font-size: 4em;
           }
           #header h2 {
-            font-size: 3em;
+            font-size: 2em;
           }          
         }
         @media (min-width: 920px) {
           #header, #body {
             padding: 50px;
-            padding-bottom: 150px;
+            padding-bottom: 50px;
           }
           #header h1 {
-            font-size: 10em;
+            font-size: 6em;
           }
           #header h2 {
-            font-size: 4em;
+            font-size: 3em;
           }          
         }
       
@@ -254,5 +284,7 @@
     <div id="body">
       <?= MarkdownExtra::defaultTransform($v['body_md']) ?>
     </div>
+    
+    <!-- Insert Google Analytics here. -->
 </body>
 </html>
